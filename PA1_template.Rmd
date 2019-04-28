@@ -80,18 +80,6 @@ hist(x=sumofsteps2,
      breaks=10)
 ```
 
-create a histogram of the total no of steps taken every day, blanks are imputed with mean for the interval
-```{r, echo=TRUE}
-sumofsteps2 <- tapply(impute$steps, impute$date, sum, na.rm=TRUE, simplify=T)
-
-hist(x=sumofsteps2,
-     main="Histogram -mber of Steps Taken Each Day, imputed for NA",
-     xlab="Number of Steps Daily",
-     ylab="Frequency",
-     col="blue",
-     breaks=10)
-```
-
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r, echo=TRUE}
 weekday <- function(d) {
