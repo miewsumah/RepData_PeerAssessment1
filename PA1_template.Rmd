@@ -41,9 +41,17 @@ median(sumofsteps)
 ## What is the average daily activity pattern?
 calculate and report the mean and median no of steps taken per day
 ```{r, echo=TRUE}
-mean(sumofsteps)
+avestep <- tapply(activity2$steps, activity2$interval, mean, na.rm=TRUE, simplify=T)
+avestep2 <- data.frame(interval=as.integer(names(avestep)), ave=avestep)
 
-median(sumofsteps)
+with(avestep2,
+     plot(interval,
+          ave,
+          type="l",
+          xlab="intervals",
+          ylab="average num of steps"))
+
+## max no of steps across the intervals
 maxstep <- max(avestep2$ave)
 avestep2[avestep2$ave == maxstep, ]
 ```
