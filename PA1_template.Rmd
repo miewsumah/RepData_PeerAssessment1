@@ -50,8 +50,10 @@ with(avestep2,
           type="l",
           xlab="intervals",
           ylab="average num of steps"))
+```
 
 ## max no of steps across the intervals
+```{r, echo=TRUE}
 maxstep <- max(avestep2$ave)
 avestep2[avestep2$ave == maxstep, ]
 ```
@@ -78,6 +80,13 @@ hist(x=sumofsteps2,
      ylab="Frequency",
      col="blue",
      breaks=10)
+```
+
+calculate and report the mean and median no of steps taken per day imputed for 'NA'
+```{r, echo=TRUE}
+mean(sumofsteps2)
+
+median(sumofsteps2)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
