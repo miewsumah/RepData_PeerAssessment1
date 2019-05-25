@@ -1,0 +1,132 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+
+output: 
+
+  html_document:
+
+    keep_md: true
+
+---
+   
+# 1.loading and preprossessing the data
+```{r, echo=TRUE}
+activity <- read.csv("activity.csv", head = TRUE, colClasses =c("integer", "character", "integer"), na.strings="NA")
+head(activity)
+```
+
+```{r, echo=TRUE}
+library(ggplot2)
+library(VIM)
+activity$date <- as.Date(activity$date)
+## subset and keep only rows with non "NA" steps
+activity2 <- subset(activity, !is.na(activity$steps))
+```
+
+# 2.histogram of the total no of steps taken every day
+```{r, echo=TRUE}
+sumofsteps <- tapply(activity2$steps, activity2$date, sum, na.rm=TRUE, simplify=T)
+sumofsteps <- sumofsteps[!is.na(sumofsteps)]
+```
+
+```{r, echo=TRUE}
+hist(x=sumofsteps,
+     main="Histogram - Number of Steps Taken Each Day",
+     xlab="Number of Steps Daily",
+     ylab="Frequency",
+     col="blue",
+     breaks=10)
+```
+
+# 3.mean and median no of steps taken per day
+```{r, echo=TRUE}
+mean(sumofsteps)
+
+median(sumofsteps)
+```
+
+# 4.time series plot of number of steps per day
+```{r, echo=TRUE}
+avestep <- tapply(activity2$steps, activity2$interval, mean, na.rm=TRUE, simplify=T)
+avestep2 <- data.frame(interval=as.integer(names(avestep)), ave=avestep)
+```
+
+```{r, echo=TRUE}
+with(avestep2,
+     plot(interval,
+          ave,
+          type="l",
+          xlab="intervals",
+          ylab="average num of steps"))
+```
+
+# 5.max no of steps across the intervals
+```{r, echo=TRUE}
+maxstep <- max(avestep2$ave)
+avestep2[avestep2$ave == maxstep, ]
+```
+
+# 6.imputing missing values
+```{r, echo=TRUE}
+sum(is.na(activity$steps))
+```
+
+```{r, echo=TRUE}
+impute <- activity
+nastep <- is.na(impute$steps)
+intave <- tapply(activity2$steps, activity2$interval, mean, na.rm=TRUE, simplify=T)
+impute$steps[nastep] <- intave[as.character(impute$interval[nastep])]
+```
+
+# 7.histogram of the total no of steps taken every day, blanks are imputed with mean for the interval
+```{r, echo=TRUE}
+sumofsteps2 <- tapply(impute$steps, impute$date, sum, na.rm=TRUE, simplify=T)
+```
+
+```{r, echo=TRUE}
+hist(x=sumofsteps2,
+     main="Histogram - Number of Steps Taken Each Day, imputed for NA",
+     xlab="Number of Steps Daily",
+     ylab="Frequency",
+     col="blue",
+     breaks=10)
+```
+
+```{r, echo=TRUE}
+mean(sumofsteps2)
+
+median(sumofsteps2)
+```
+  
+### There is no difference in the mean after impute. The median after impute is higher.
+
+# 8.plot of the total no of steps taken every day, blanks are imputed with mean for the interval
+```{r, echo=TRUE}
+weekday <- function(d) {
+  wd <- weekdays(d)
+  ifelse (wd == "Saturday" | wd == "Sunday", "weekend", "weekday")
+}
+wx <- sapply(impute$date, weekday)
+impute$wk <- as.factor(wx)
+head(impute)
+```
+
+```{r, echo=TRUE}
+wkactivity <- aggregate(steps ~ wk+interval, data=impute, FUN=mean)
+library(lattice)
+xyplot(steps ~ interval | factor(wk),
+       layout = c(1, 2),
+       xlab="interval",
+       ylab="number of steps",
+       type="l",
+       lty=1,
+       data=wkactivity)
+```
+
+
+
+
+
+
+
+
